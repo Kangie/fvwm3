@@ -37,15 +37,15 @@ void sclose(int foo)
 	}
 	exit(0);
 
-	SIGNAL_RETURN;
+	return;
 }
 
-RETSIGTYPE ReapChildren(int sig)
+void ReapChildren(int sig)
 {
 	fvwmReapChildren(sig);
 	sclose(sig);
 
-	SIGNAL_RETURN;
+	return;
 }
 
 /*

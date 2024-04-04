@@ -263,7 +263,7 @@ extern struct fpmonitors	fp_monitor_q;
  *
  */
 void Loop(int *fd);
-RETSIGTYPE DeadPipe(int nonsense);
+void DeadPipe(int nonsense);
 void process_message(FvwmPacket*);
 void ParseOptions(void);
 

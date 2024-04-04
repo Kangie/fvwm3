@@ -569,7 +569,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	struct sigaction defaultHandler;
 	struct sigaction originalHandler;
 #else
-	RETSIGTYPE (*originalHandler)(int);
+	void (*originalHandler)(int);
 #endif
 
 	if (!XpmSupport)

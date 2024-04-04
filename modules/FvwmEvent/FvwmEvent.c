@@ -75,8 +75,8 @@ typedef struct
 
 void execute_event(event_entry*, short, unsigned long*);
 void config(void);
-RETSIGTYPE DeadPipe(int);
-static RETSIGTYPE TerminateHandler(int);
+void DeadPipe(int);
+static void TerminateHandler(int);
 
 /* ---------------------------- local variables ----------------------------- */
 
@@ -678,12 +678,12 @@ void config(void)
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-static RETSIGTYPE
+static void
 TerminateHandler(int nonsense)
 {
 	isTerminated = True;
 
-	SIGNAL_RETURN;
+	return;
 }
 
 /*
@@ -692,9 +692,9 @@ TerminateHandler(int nonsense)
  *      Externally callable procedure to quit
  *
  */
-RETSIGTYPE DeadPipe(int flag)
+void DeadPipe(int flag)
 {
 	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL);
 	exit(flag);
-	SIGNAL_RETURN;
+	return;
 }

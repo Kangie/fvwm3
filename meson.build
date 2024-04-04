@@ -10,7 +10,7 @@ project(
     default_options: [
         'c_std=c11',
         'warning_level=2',
-        'werror=false',
+        'werror=false', # todo: fix warnings, turn this to 'true'
     ],
 )
 
@@ -65,8 +65,6 @@ conf.set_quoted(
 conf.set_quoted('FVWM_DATADIR', fvwm_datadir)
 conf.set_quoted('LOCALEDIR', conf.get('FVWM_DATADIR') + '/' + 'locale')
 conf.set_quoted('FVWM_CONFDIR', get_option('sysconfdir'))
-conf.set('RETSIGTYPE', 'void')
-conf.set('SIGNAL_RETURN', 'return')
 conf.set('ICONV_ARG_CONST', '')
 conf.set('fd_set_size_t', 'int')
 conf.set('EXECUTABLE_EXTENSION', 'NULL')

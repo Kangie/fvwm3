@@ -165,7 +165,8 @@ static bool fp_new_block = false;
 static PagerStringList *FindDeskStrings(int desk);
 static PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
-static RETSIGTYPE TerminateHandler(int);
+static void TerminateHandler(int);
+
 static void list_monitor_focus(unsigned long *);
 static struct fpmonitor *fpmonitor_new(struct monitor *);
 static void fpmonitor_disable(struct fpmonitor *);
@@ -665,17 +666,17 @@ void process_message( FvwmPacket* packet )
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
-  SIGNAL_RETURN;
+  return;
 }
 
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
   exit(0);
-  SIGNAL_RETURN;
+  return;
 }
 
 
