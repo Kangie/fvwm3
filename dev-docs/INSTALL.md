@@ -60,22 +60,61 @@ To generate `fvwm3`'s documentation:
 Installing From Git
 ===================
 
+## Autotools
+
 FVWM3 has a bootstrap script to generate `configure` and associated files.
 Run the following command chain to generate the `configure` script and build
 the project:
 
+```console
+user@host:~/fvwm3$ ./autogen.sh
+user@host:~/fvwm3$ ./configure
+user@host:~/fvwm3$ make
+user@host:~/fvwm3$ sudo make install
 ```
-./autogen.sh && ./configure && make
+
+## Meson
+
+FVWM3 supports the Meson build system. To build with Meson first configure the build then use the 'Ninja' tool to compile and install:
+
+```console
+user@host:~/fvwm3$ meson setup build
+user@host:~/fvwm3/builddir$ ninja -C build
+user@host:~/fvwm3/builddir$ ninja -C build install
 ```
+
+Ninja also has an `uninstall` target:
+
+```console
+user@host:~/fvwm3/builddir$ ninja -C build uninstall
+```
+
+To configure the build, pass options to `meson setup` (or `meson configure «builddir»` if the project has already been setup):
+
+```console
+user@host:~/fvwm3$ meson setup build --prefix=/usr --buildtype=release -Dmandoc=true
+```
+
+For a full list of flags and possible values, see `meson configure meson.build` or point `meson configure` at an existing builddir with no arguments.
 
 Installing From Release Tarball
 ===============================
 
 Release tarballs will come bundled with `./configure` already, hence:
 
-```
-./configure && make
+```console
+user@host:~/fvwm3-1.2.3$ ./configure
+user@host:~/fvwm3-1.2.3$ make
+user@host:~/fvwm3-1.2.3$ sudo make install
 ```
 
-As with most things, if the default options `./configure` chooses isn't
-appropriate for your needs, see `./configure --help` for appropriate options.
+or
+
+```console
+user@host:~/fvwm3$ meson setup build
+user@host:~/fvwm3/builddir$ ninja -C build
+user@host:~/fvwm3/builddir$ meson install -C build
+```
+
+As with most things, if the default options aren't appropriate for your needs,
+see `./configure --help` or `meson configure meson.build` for appropriate options.
