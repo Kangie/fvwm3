@@ -1,0 +1,61 @@
+option(
+    'bidi',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable fribidi support',
+)
+option(
+    'golang',
+    type: 'feature',
+    value: 'auto',
+    description: 'Build Golang modules',
+)
+option(
+    'htmldoc',
+    type: 'boolean',
+    value: false,
+    description: 'Enable generation of HTML man pages',
+)
+option(
+    'iconv',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable iconv support',
+)
+option(
+    'mandoc',
+    type: 'boolean',
+    value: false,
+    description: 'Enable generation of man pages',
+)
+option('nls', type: 'feature', value: 'auto', description: 'Enable NLS')
+option('png', type: 'feature', value: 'auto', description: 'Enable png support')
+option(
+    'python',
+    type: 'string',
+    description: 'Select python implementation',
+)
+option(
+    'readline',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable readline support for FvwmConsole (disabled if using Go)',
+)
+option(
+    'rsvg',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable svg support',
+)
+option(
+    'sm',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable session management support',
+)
+option(
+    'xext',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable shaped window support',
+)
