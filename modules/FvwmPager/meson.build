@@ -1,8 +1,11 @@
-module_sources = ['FvwmEvent.c']
+install_data(
+    'ConfigFvwmPager',
+    install_dir: join_paths(datadir, meson.project_name()),
+)
 
 executable(
-    'FvwmEvent',
-    module_sources,
+    'FvwmPager',
+    sources: ['FvwmPager.c', 'x_pager.c'],
     dependencies: [all_found_deps],
     include_directories: includedirs,
     install_dir: fvwm_moduledir,
