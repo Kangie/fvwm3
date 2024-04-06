@@ -338,10 +338,9 @@ lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
 
 subdir('libs')
-
 subdir('po')
-
 subdir('fvwm')
+subdir('default-config')
 
 fvwm3 = executable(
     meson.project_name(),
