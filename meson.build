@@ -37,6 +37,7 @@ bindir = get_option('bindir')
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
+fvwm_datadir = join_paths( datadir, meson.project_name())
 fvwm_moduledir = get_option('libexecdir') + '/' + meson.project_name() + '/' + meson.project_version()
 
 syslibs = []
@@ -61,7 +62,7 @@ conf.set_quoted(
     'FVWM_MODULEDIR',
     fvwm_moduledir,
 )
-conf.set_quoted('FVWM_DATADIR', datadir + '/' + meson.project_name())
+conf.set_quoted('FVWM_DATADIR', fvwm_datadir)
 conf.set_quoted('LOCALEDIR', conf.get('FVWM_DATADIR') + '/' + 'locale')
 conf.set_quoted('FVWM_CONFDIR', get_option('sysconfdir'))
 conf.set('RETSIGTYPE', 'void')
@@ -337,10 +338,32 @@ libraries = []
 lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
 
+# These are used to configure files in 'bin' and 'perllib'
+perl_config = configuration_data()
+perl_config.set('PERL', perl.full_path())
+perl_config.set('VERSION', conf.get('VERSION'))
+perl_config.set('datadir', fvwm_datadir)
+perl_config.set('FVWM_DATADIR', fvwm_datadir)
+perl_config.set('datarootdir', datadir)
+perl_config.set(
+    'FVWM_PERLLIBDIR',
+    fvwm_datadir + '/perllib',
+)
+perl_config.set('prefix', prefix)
+perl_config.set('SED', find_program('sed').full_path())
+perl_config.set('VERSIONINFO', meson.project_version())
+
+python_config = configuration_data()
+# Since we only support python3 now anyway, we should consider dropping this.
+python_config.set('PYTHON', py.full_path())
+python_config.set('VERSION', conf.get('VERSION'))
+python_config.set('VERSIONINFO', meson.project_version())
+
 subdir('libs')
 subdir('po')
 subdir('fvwm')
 subdir('default-config')
+subdir('perllib')
 
 fvwm3 = executable(
     meson.project_name(),
@@ -371,13 +394,12 @@ if not golang.found()
     modules += {'FvwmConsole': {'subdir': 'modules/FvwmConsole'}}
 endif
 
-# FvwmPrompt and FvwmCommand
-subdir('bin')
-
-module_sources = []
 foreach m, _ : modules
     subdir(modules[m]['subdir'])
 endforeach
+
+# FvwmPrompt and FvwmCommand
+subdir('bin')
 
 summary(
     {
