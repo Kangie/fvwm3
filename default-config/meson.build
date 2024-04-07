@@ -1,4 +1,8 @@
-default_confdir = join_paths(get_option('datadir'), meson.project_name(), 'default-config')
+default_confdir = join_paths(
+    get_option('datadir'),
+    meson.project_name(),
+    'default-config',
+)
 
 default_conf_files = [
     'images/background/bg1.png',
