@@ -1,0 +1,6 @@
+configure_file(
+    input: 'FvwmPerl.in',
+    output: 'FvwmPerl',
+    configuration: perl_config,
+    install_dir: fvwm_moduledir
+)

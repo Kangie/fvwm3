@@ -362,6 +362,7 @@ modules = {
     'FvwmIdent': {'subdir': 'modules/FvwmIdent'},
     'FvwmMFL': {'subdir': 'modules/FvwmMFL'},
     'FvwmPager': {'subdir': 'modules/FvwmPager'},
+    'FvwmPerl': {'subdir': 'modules/FvwmPerl'},
 }
 
 if not golang.found()
