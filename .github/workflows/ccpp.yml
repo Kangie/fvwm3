@@ -8,7 +8,7 @@ on:
         branches:
             - main
 jobs:
-  build:
+  build-autotools-gcc:
     runs-on: ubuntu-latest
     container:
       image: fvwmorg/fvwm3-build:latest
@@ -20,11 +20,11 @@ jobs:
       - name: set git safe directory
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
       - name: Autotools configure
-        run: ./autogen.sh && ./configure --enable-mandoc --enable-golang
+        run: ./autogen.sh && CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing" ./configure --enable-mandoc --enable-golang
       - name: Autotools build
         run: make -j
 
-  build-meson:
+  build-meson-clang:
     runs-on: ubuntu-latest
     container: fvwmorg/fvwm3-build:latest
     steps:
@@ -45,7 +45,7 @@ jobs:
         uses: Gottox/irc-message-action@v2.1.3
         if: github.event_name == 'pull_request'
         with:
-          server: "irc.libera.chat"
+          server: irc.libera.chat
           notice: false
           channel: "#fvwm"
           nickname: fvwm3-gh-pr
@@ -54,7 +54,7 @@ jobs:
         uses: Gottox/irc-message-action@v2.1.3
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
-          server: "irc.libera.chat"
+          server: irc.libera.chat
           notice: false
           channel: "#fvwm"
           nickname: fvwm-gh
