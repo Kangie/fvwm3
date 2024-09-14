@@ -210,9 +210,27 @@ endif
 sed = find_program('sed', required: true)
 
 # Optional dependencies
-# First we check for things specified by the user (i.e. no automagic)
-# Then we check for automagic dependencies.
-# Tip: 'Feature' types will always report 'not found' if disabled
+# Tip: 'Feature' types always report 'not found' if disabled
+
+freetype = dependency('freetype2', required: get_option('freetype'))
+if freetype.found()
+    all_found_deps += freetype
+    summary_depvals += {'freetype': freetype}
+    conf.set10('HAVE_XFT', true)
+    freetype_req_deps = ['xft', 'fontconfig']
+    freetype_deps = []
+    foreach d : freetype_req_deps
+        freetype_dep = dependency(d, required: true)
+        if freetype_dep.found()
+            freetype_deps += freetype_dep
+            summary_depvals += {d: freetype_dep}
+            conf.set10('HAVE_' + d.to_upper().underscorify(), true)
+        endif
+    endforeach
+    if freetype_deps.length() > 0
+        all_found_deps += freetype_deps
+    endif
+endif
 
 fribidi = dependency(
     'fribidi',
@@ -266,16 +284,18 @@ endif
 librsvg = dependency(
     'librsvg-2.0',
     version: '>=2.13.92',
-    required: get_option('rsvg'),
+    required: get_option('svg'),
 )
 if librsvg.found()
     all_found_deps += librsvg
     conf.set10('HAVE_RSVG', true)
     # We need at least one of these dependencies
-    svg_opt_deps = ['cairo', 'cairo-svg', 'libsvg-cairo']
+    svg_backends = ['cairo', 'cairo-svg', 'libsvg-cairo']
     svg_deps = []
-    foreach d : svg_opt_deps
-        svg_dep = dependency(d, required: false)
+    foreach d : svg_backends
+        # By treating these as features we can let automagic find one or more backends
+        # or we can explicitly set one or more backends as required, or disable ones we don't want to use.
+        svg_dep = dependency(d, required: get_option(d))
         if svg_dep.found()
             svg_deps += svg_dep
             summary_depvals += {d: svg_dep}
@@ -284,6 +304,7 @@ if librsvg.found()
         endif
     endforeach
     if svg_deps.length() == 0
+        # If everything is set to auto we need to explicitly fail here.
         error(
             'librsvg found but also require one of: ' + svg_opt_deps.join(' '),
         )
@@ -298,63 +319,35 @@ if sm.found()
     conf.set10('SESSION', true)
 endif
 
+xcursor = dependency('xcursor', required: get_option('xcursor'))
+if xcursor.found()
+    all_found_deps += xcursor
+    conf.set10('HAVE_XCURSOR', true)
+endif
+
 xext = dependency('xext', required: get_option('xext'))
 if xext.found()
     all_found_deps += xext
     conf.set10('HAVE_SHAPE', true)
 endif
 
-# Automagic optional dependencies
-# TODO: Automagic dependencies are a nightmare for
-# downstream packagers who need to know what is
-# and is not enabled for a package at build-time
-# not what was randomly also found on their system.
-
-# We should either make these required or hide them behind
-# a feature flag.
-
-freetype = dependency('freetype2', required: false)
-if freetype.found()
-    all_found_deps += freetype
-    summary_depvals += {'freetype': freetype}
-    conf.set10('HAVE_XFT', true)
-    freetype_opt_deps = ['xft', 'fontconfig']
-    freetype_deps = []
-    foreach d : freetype_opt_deps
-        # These deps were previously listed as 'optional', but with 'required: true'
-        freetype_dep = dependency(d, required: false)
-        if freetype_dep.found()
-            freetype_deps += freetype_dep
-            summary_depvals += {d: freetype_dep}
-            conf.set10('HAVE_' + d.to_upper().underscorify(), true)
-        endif
-    endforeach
-    if freetype_deps.length() > 0
-        all_found_deps += freetype_deps
-    endif
-endif
-
-xkbcommon = dependency('xkbcommon', required: false)
+xkbcommon = dependency('xkbcommon', required: get_option('xkbcommon'))
 if xkbcommon.found()
     all_found_deps += xkbcommon
     conf.set10('HAVE_X11_XKBLIB_H', true)
-    summary_depvals += {'xkbcommon': xkbcommon}
 endif
 
-xpm = dependency('xpm', required: false)
+xpm = dependency('xpm', required: get_option('xpm'))
 if xpm.found()
     all_found_deps += xpm
     conf.set10('HAVE_XPM', true)
-    summary_depvals += {'xpm': xpm}
 endif
 
-automagic_opt_deps = ['xcursor', 'xrender']
-foreach ad : automagic_opt_deps
-    this_dep = dependency(ad, required: true)
-    summary_depvals += {ad: this_dep}
-    conf.set10('HAVE_' + ad.to_upper().underscorify(), true)
-    all_found_deps += this_dep
-endforeach
+xrender = dependency('xrender', required: get_option('xrender'))
+if xrender.found()
+    all_found_deps += xrender
+    conf.set10('HAVE_XRENDER', true)
+endif
 
 # Hard-coded
 non_configurable_ops = [
@@ -533,14 +526,19 @@ summary(
 )
 
 featurevals = {
-    'bidi': fribidi.found() ? fribidi : false,
+    'BiDi': fribidi.found() ? fribidi : false,
+    'FreeType': freetype.found() ? freetype : false,
     'Go Modules': golang.found(),
     'iconv': iconv.found(),
     'NLS': libintl.found(),
+    'PNG support': libpng.found() ? libpng : false,
     'Session Management': sm.found() ? sm : false,
     'Shaped Windows': xext.found() ? xext : false,
-    'PNG support': libpng.found() ? libpng : false,
     'SVG support': librsvg.found() ? librsvg : false,
+    'Xcursor': xcursor.found() ? xcursor : false,
+    'xkbcommon': xkbcommon.found() ? xkbcommon : false,
+    'XPM support': xpm.found() ? xpm : false,
+    'XRender': xrender.found() ? xrender : false,
 }
 
 if not golang.found()

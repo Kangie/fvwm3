@@ -33,7 +33,7 @@ jobs:
       - name: set git safe directory
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
       - name: configure meson build
-        run:  CC=clang CC_LD=lld meson setup builddir -Dhtmldoc=true -Dmandoc=true -Dauto_features=enabled
+        run:  CC=clang CC_LD=lld meson setup builddir -Dhtmldoc=true -Dmandoc=true
       - name: run build
         run: ninja -C builddir
 
