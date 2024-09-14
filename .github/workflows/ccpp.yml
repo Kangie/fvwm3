@@ -8,35 +8,40 @@ on:
         branches:
             - main
 jobs:
-  build-autotools-gcc:
+  build:
     runs-on: ubuntu-latest
     container:
-      image: fvwmorg/fvwm3-build:latest
-      env:
-        GO111MODULE: "on"
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: set git safe directory
-        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      - name: Autotools configure
-        run: ./autogen.sh && CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing" ./configure --enable-mandoc --enable-golang
-      - name: Autotools build
-        run: make -j
+      image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/fvwm3-build:latest' }}
+    env:
+      GO111MODULE: "on"
 
-  build-meson-clang:
-    runs-on: ubuntu-latest
-    container: fvwmorg/fvwm3-build:latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: set git safe directory
-        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      - name: configure meson build
-        run:  CC=clang CC_LD=lld meson setup builddir -Dhtmldoc=true -Dmandoc=true
-      - name: run build
-        run: ninja -C builddir
+    strategy:
+      matrix:
+        os: [ubuntu-latest, alpine]
+        build-system: [autotools, meson]
+        compiler: [gcc, clang]
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set git safe directory
+        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
+
+      - name: Configure and Build
+        run: |
+          if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            if [ "${{ matrix.compiler }}" = "gcc" ]; then
+              export CC=gcc
+              export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+              ./autogen.sh && ./configure --enable-mandoc --enable-golang && make -j
+            fi
+          fi
+          if [ "${{ matrix.build-system }}" = "meson" ]; then
+            export CC=${{ matrix.compiler }}
+            export CC_LD=lld
+            meson setup builddir -Dhtmldoc=true -Dmandoc=true && ninja -C builddir
+          fi
   notification:
     runs-on: ubuntu-20.04
     name: notifications
