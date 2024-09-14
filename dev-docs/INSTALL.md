@@ -1,7 +1,8 @@
 Installation Instructions
 =========================
 
-FVWM3 uses automake and autotools as its build process.
+FVWM3 prefers `meson` as its build tool chain, but provides `autotools` as a
+legacy fallback on older systems.
 
 Dependencies
 ============
@@ -49,72 +50,53 @@ system in use.
 Generating documentation
 ========================
 
+`fvwm3` won't compile documentation by default, so it's opt-in.
+
 To generate `fvwm3`'s documentation:
 
 1. Install `asciidoctor`
-2. To generate manpages:  pass `--enable-mandoc` to `./configure`
-3. To generate HTML docs: pass `--enable-htmldoc` to `./configure`
+2. To generate manpages:  pass `-Dhtmldoc=true` to `meson`
+3. To generate HTML docs: pass `-Dmandoc=true` to `meson`
 
-`fvwm3` won't compile documentation by default, so it's opt-in.
 
 Installing From Git
 ===================
 
-## Autotools
+## Build Systems
 
-FVWM3 has a bootstrap script to generate `configure` and associated files.
-Run the following command chain to generate the `configure` script and build
-the project:
+`fvwm3` has traditionally been using autotools.  However, this is now
+deprecated in favour of `meson`.  It is suggested that all systems which
+support `meson` use this instead as it is now the preferred build system to
+use.
 
-```console
-user@host:~/fvwm3$ ./autogen.sh
-user@host:~/fvwm3$ ./configure
-user@host:~/fvwm3$ make
-user@host:~/fvwm3$ sudo make install
+The `autotools` build system remains to provide legacy support but is not
+going to see any updates to it.
+
+### Autotools
+
+```
+./autogen.sh && ./configure && make && sudo make install
 ```
 
-## Meson
+### Meson
 
-FVWM3 supports the Meson build system. To build with Meson first configure the build then use the 'Ninja' tool to compile and install:
-
-```console
-user@host:~/fvwm3$ meson setup build
-user@host:~/fvwm3/builddir$ ninja -C build
-user@host:~/fvwm3/builddir$ ninja -C build install
 ```
-
-Ninja also has an `uninstall` target:
-
-```console
-user@host:~/fvwm3/builddir$ ninja -C build uninstall
+meson setup build && ninja -C build && ninja -C build install
 ```
-
-To configure the build, pass options to `meson setup` (or `meson configure «builddir»` if the project has already been setup):
-
-```console
-user@host:~/fvwm3$ meson setup build --prefix=/usr --buildtype=release -Dmandoc=true
-```
-
-For a full list of flags and possible values, see `meson configure meson.build` or point `meson configure` at an existing builddir with no arguments.
 
 Installing From Release Tarball
 ===============================
 
+## Autotools
+
 Release tarballs will come bundled with `./configure` already, hence:
 
-```console
-user@host:~/fvwm3-1.2.3$ ./configure
-user@host:~/fvwm3-1.2.3$ make
-user@host:~/fvwm3-1.2.3$ sudo make install
+```
+./configure && make && sudo make install
 ```
 
-or
+## Meson
 
-```console
-user@host:~/fvwm3$ meson setup build
-user@host:~/fvwm3/builddir$ ninja -C build
-user@host:~/fvwm3/builddir$ meson install -C build
 ```
-
-As with most things, if the default options aren't appropriate for your needs,
-see `./configure --help` or `meson configure meson.build` for appropriate options.
+meson setup build && ninja -C build && meson install -C build
+```
