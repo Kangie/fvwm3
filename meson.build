@@ -97,6 +97,7 @@ headers = [
     'string.h',
     'strings.h',
     'sys/select.h',
+    'sys/stat.h',
     'sys/systeminfo.h',
     'sys/time.h',
     'sys/wait.h',
