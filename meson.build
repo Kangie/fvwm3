@@ -163,7 +163,7 @@ all_found_deps = []
 
 # Required dependencies, we can easily iterate over these.
 summary_depvals = {}
-all_req_deps = ['x11', 'xt', 'xrandr', 'libevent', 'ice']
+all_req_deps = ['ice', 'libevent', 'x11', 'xft', 'xrandr', 'xt']
 foreach rd : all_req_deps
     this_dep = dependency(rd, required: true)
     summary_depvals += {rd: this_dep}
@@ -216,21 +216,10 @@ sed = find_program('sed', required: true)
 freetype = dependency('freetype2', required: get_option('freetype'))
 if freetype.found()
     all_found_deps += freetype
-    summary_depvals += {'freetype': freetype}
-    conf.set10('HAVE_XFT', true)
-    freetype_req_deps = ['xft', 'fontconfig']
     freetype_deps = []
-    foreach d : freetype_req_deps
-        freetype_dep = dependency(d, required: true)
-        if freetype_dep.found()
-            freetype_deps += freetype_dep
-            summary_depvals += {d: freetype_dep}
-            conf.set10('HAVE_' + d.to_upper().underscorify(), true)
-        endif
-    endforeach
-    if freetype_deps.length() > 0
-        all_found_deps += freetype_deps
-    endif
+    fontconfig = dependency('fontconfig', required: true)
+    all_found_deps += fontconfig
+    summary_depvals += {'fontconfig': fontconfig}
 endif
 
 fribidi = dependency(
