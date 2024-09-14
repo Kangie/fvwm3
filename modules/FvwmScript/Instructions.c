@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <time.h>
+
 #include "types.h"
 #include "libs/fvwmsignal.h"
 #include "libs/ftime.h"
