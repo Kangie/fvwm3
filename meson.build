@@ -87,8 +87,6 @@ conf.set('SIGNAL_RETURN', 'return')
 conf.set('ICONV_ARG_CONST', '')
 conf.set('fd_set_size_t', 'int')
 conf.set('EXECUTABLE_EXTENSION', 'NULL')
-conf.set10('HAVE_XOUTPUT_METHOD', true)
-conf.set10('FORK_CREATES_CHILD', true)
 
 # Enable FTMs
 if host_machine.system() == 'linux'
@@ -360,6 +358,11 @@ endif
 # Hard-coded
 non_configurable_ops = [
     'FMiniIconsSupported',
+    'FORK_CREATES_CHILD',
+    'HAVE_MKSTEMP', # POSIX 2001; safer since 2008; no real need to check for this on a modern system.
+    'HAVE_SAFE_MKSTEMP',
+    'HAVE_X11_FD',
+    'HAVE_XOUTPUT_METHOD',
     'HAVE_XSHM',
 ]
 
